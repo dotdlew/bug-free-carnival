@@ -1,0 +1,31 @@
+{
+  "name": "bug-free-carnival",
+  "version": "1.0.0",
+  "description": "Project 2 Group 11",
+  "main": "carnival.js",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "connect-session-sequelize": "^7.1.1",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "handlebars": "^4.7.7",
+    "mysql2": "^2.2.5",
+    "sequelize": "^6.6.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dotdlew/bug-free-carnival.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dotdlew/bug-free-carnival/issues"
+  },
+  "homepage": "https://github.com/dotdlew/bug-free-carnival#readme"
+}
