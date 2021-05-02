@@ -1,39 +1,33 @@
-const path = require('path');
-const express = require('express');
-const session = require('express-session');
-const exphbs = require('express-handlebars');
-const helpers = require('./utils/helpers');
-const hbs = exphbs.create({helpers});
-// const passport = require('passport')
+const express = require("express");
+const mysql = require("mysql2");
 
-const app = express();
 const PORT = process.env.PORT || 3001;
+const app = express();
 
-const sequelize = require('./config/connection');
-const SequelizeStore = require('connect-session-sequelize')(session.Store);
+require("dotenv").config();
+// Connect to database
+const db = mysql.createConnection(
+  {
+    host: "localhost",
+    user: process.env.DB_USER,
+    password: process.env.DB_PW,
+    database: process.env.DB_NAME,
+  },
+  console.log("Connected to the carnival_db database.")
+);
 
-const sess = {
-        secret: 'Super secret secret',
-        cookie: {},
-        resave: false,
-        saveUninitialized: true,
-        store: new SequelizeStore({
-        db: sequelize
-    })
-};
+// Test the Express.js Connection
+app.get("/", (req, res) => {
+  res.json({
+    message: "Hello World!",
+  });
+});
 
-app.use(session(sess));
+// route to handle user requests that aren't supported by the app
+app.use((req, res) => {
+  res.status(404).end();
+});
 
-
-app.engine('handlebars', hbs.engine);
-app.set('view engine', 'handlebars');
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.use(require('./controllers/'));
-
-sequelize.sync({ force: false }).then(() => {
-    app.listen(PORT, () => console.log('Now listening'));
+app.listen(PORT, () => {
+  console.log(`SERVER RUNNING ON ${PORT}`);
 });
