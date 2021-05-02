@@ -1,4 +1,4 @@
-INSERT INTO dbUserLogin (username, email, password)
+INSERT INTO userLogins (username, email, password)
 VALUES
     ("user1", "u1@ema.il", "passw1rd"),
     ("user2", "u2@ema.il", "passw2rd"),
