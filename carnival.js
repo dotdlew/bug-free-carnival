@@ -1,39 +1,67 @@
-const path = require('path');
-const express = require('express');
-const session = require('express-session');
-const exphbs = require('express-handlebars');
-const helpers = require('./utils/helpers');
-const hbs = exphbs.create({helpers});
-// const passport = require('passport')
+require("dotenv").config();
 
-const app = express();
+const express = require("express");
+const mysql = require("mysql2");
+
 const PORT = process.env.PORT || 3001;
+const app = express();
 
-const sequelize = require('./config/connection');
-const SequelizeStore = require('connect-session-sequelize')(session.Store);
+// Connect to database
+const db = mysql.createConnection(
+  {
+    host: "localhost",
+    user: process.env.DB_USER,
+    password: process.env.DB_PW,
+    database: process.env.DB_NAME,
+  },
+  console.log("Connected to the carnival_db database.")
+);
 
-const sess = {
-        secret: 'Super secret secret',
-        cookie: {},
-        resave: false,
-        saveUninitialized: true,
-        store: new SequelizeStore({
-        db: sequelize
-    })
-};
+// CREATE a userLogins
+const sql = `INSERT INTO userLogins (id, username, email, password)
+              VALUES (?,?,?,?)`;
+const params = [1, "username", "email", "password"];
 
-app.use(session(sess));
+db.query(sql, params, (err, result) => {
+  if (err) {
+    console.log(err);
+  }
+  console.log(result);
+});
 
+// DELETE a userLogins
+// db.query(`DELETE FROM userLogins WHERE id = ?`, 1, (err, result) => {
+//   if (err) {
+//     console.log(err);
+//   }
+//   console.log(result);
+// });
 
-app.engine('handlebars', hbs.engine);
-app.set('view engine', 'handlebars');
+// GET all userLogins
+// db.query(`SELECT * FROM userLogins`, (err, rows) => {
+//   console.log(rows);
+// });
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'public')));
+// GET a single userLogins
+// db.query(`SELECT * FROM userLogins WHERE id = 1`, (err, row) => {
+//   if (err) {
+//     console.log(err);
+//   }
+//   console.log(row);
+// });
 
-app.use(require('./controllers/'));
+// Test the Express.js Connection
+app.get("/", (req, res) => {
+  res.json({
+    message: "Hello World!",
+  });
+});
 
-sequelize.sync({ force: false }).then(() => {
-    app.listen(PORT, () => console.log('Now listening'));
+// route to handle user requests that aren't supported by the app
+app.use((req, res) => {
+  res.status(404).end();
+});
+
+app.listen(PORT, () => {
+  console.log(`SERVER RUNNING ON ${PORT}`);
 });
