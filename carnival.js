@@ -1,5 +1,5 @@
 require("dotenv").config();
-
+const inputCheck = require("./utils/inputCheck");
 const express = require("express");
 const mysql = require("mysql2");
 
@@ -18,37 +18,84 @@ const db = mysql.createConnection(
 );
 
 // CREATE a userLogins
-const sql = `INSERT INTO userLogins (id, username, email, password)
-              VALUES (?,?,?,?)`;
-const params = [1, "username", "email", "password"];
+app.post("/api/users", ({ body }, res) => {
+  const errors = inputCheck(body, "username", "email", "password");
 
-db.query(sql, params, (err, result) => {
-  if (err) {
-    console.log(err);
+  if (errors) {
+    res.status(400).json({ error: errors });
+    return;
   }
-  console.log(result);
+
+  const sql = `INSERT INTO userLogins (id, username, email, password)
+    VALUES (?,?,?,?)`;
+  const params = [body.username, body.email, body.password];
+
+  db.query(sql, params, (err, result) => {
+    if (err) {
+      res.status(400).json({ error: err.message });
+      return;
+    }
+    res.json({
+      message: "success",
+      data: body,
+    });
+  });
 });
 
 // DELETE a userLogins
-// db.query(`DELETE FROM userLogins WHERE id = ?`, 1, (err, result) => {
-//   if (err) {
-//     console.log(err);
-//   }
-//   console.log(result);
-// });
+app.delete("/api/users/:id", (req, res) => {
+  const sql = `DELETE FROM userLogins WHERE id = ?`;
+  const params = [req.params.id];
+
+  db.query(sql, params, (err, result) => {
+    if (err) {
+      res.statusMessage(400).json({ error: res.message });
+    } else if (!result.affectedRows) {
+      res.json({
+        message: "user not found",
+      });
+    } else {
+      res.json({
+        message: "user deleted",
+        changes: result.affectedRows,
+        id: req.params.id,
+      });
+    }
+  });
+});
 
 // GET all userLogins
-// db.query(`SELECT * FROM userLogins`, (err, rows) => {
-//   console.log(rows);
-// });
+app.get("/api/users", (req, res) => {
+  const sql = `SELECT * FROM userLogins`;
 
-// GET a single userLogins
-// db.query(`SELECT * FROM userLogins WHERE id = 1`, (err, row) => {
-//   if (err) {
-//     console.log(err);
-//   }
-//   console.log(row);
-// });
+  db.query(sql, (err, rows) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({
+      message: "success",
+      data: rows,
+    });
+  });
+});
+
+// Get a single userLogins
+app.get("/api/users/:id", (req, res) => {
+  const sql = `SELECT * FROM userLogins WHERE id = ?`;
+  const params = [req.params.id];
+
+  db.query(sql, params, (err, row) => {
+    if (err) {
+      res.status(400).json({ error: err.message });
+      return;
+    }
+    res.json({
+      message: "success",
+      data: row,
+    });
+  });
+});
 
 // Test the Express.js Connection
 app.get("/", (req, res) => {
