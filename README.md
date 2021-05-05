@@ -1,8 +1,6 @@
 # bug-free-carnival
 Project 2 Group 11
 
-<<<<<<< HEAD
-
 Yo project 2 lit
 =======
 ## Description 
@@ -31,4 +29,3 @@ Ryan Helm
 
 ## Contributing
 Clone the repo and issue pull requests
->>>>>>> develop
