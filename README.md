@@ -1,8 +1,6 @@
 # bug-free-carnival
 Project 2 Group 11
 
-Yo project 2 lit
-=======
 ## Description 
 Full-Stack Node.JS Social Media / Instagram clone
 
@@ -24,7 +22,9 @@ MIT
 
 ## Credits
 Daniel Lewis
+
 Javid De Los Santos
+
 Ryan Helm
 
 ## Contributing
