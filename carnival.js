@@ -3,10 +3,14 @@ const inputCheck = require("./utils/inputCheck");
 const express = require("express");
 const mysql = require("mysql2");
 const app = express();
+const path = require('path');
 // const bcrypt = require('bcrypt');
 const passport =  require('passport');
 const flash = require('express-flash');
 const session = require('express-session');
+const exphbs = require('express-handlebars');
+const helpers = require('./utils/helpers');
+const hbs = exphbs.create({helpers});
 const methodOverride = require('method-override');
 
 const PORT = process.env.PORT || 3001;
@@ -18,7 +22,9 @@ initializePassport(
     id => users.find(user => user.id === id)
 );
 
+app.engine('handlebars', hbs.engine);
 app.set('view-engine', 'handlebars');
+
 app.use(express.urlencoded({ extended: false }));
 app.use(flash())
 app.use(session({
@@ -30,6 +36,8 @@ app.use(session({
 app.use(passport.initialize())
 app.use(passport.session())
 app.use(methodOverride('_method'))
+app.use(express.static(path.join(__dirname, 'public')));
+
 
 // Connect to database
 const db = mysql.createConnection(
@@ -130,9 +138,9 @@ app.get("/", (req, res) => {
 });
 
 // route to handle user requests that aren't supported by the app
-app.use((req, res) => {
-  res.status(404).end();
-});
+// app.use((req, res) => {
+//   res.status(404).end();
+// });
 
 app.listen(PORT, () => {
   console.log(`SERVER RUNNING ON ${PORT}`);
@@ -140,40 +148,41 @@ app.listen(PORT, () => {
 
 //for login 
 
-router.get('/', checkAuthenticated,  (req, res) => {
+app.get('/', checkAuthenticated,  (req, res) => {
   res.render('homepage.handlebars')
 })
 
-router.get('/login', checkNotAuthenticated, (req, res) => {
-  res.render('login.ejs')
-})
-router.get('/register', checkNotAuthenticated, (req, res) => {
-  res.render('register.ejs')
+// app.get('/login', checkNotAuthenticated, (req, res) => {
+//   res.render('./public/login.handlebars')
+// })
+app.get('/login', (req, res) => {
+  console.log('Testing')
+  res.render('login.handlebars')
 })
 
-router.post('/register', checkNotAuthenticated, async (req, res) => {
+app.post('/login', async (req, res) => {
   try {
       hashedPassword = await bcrypt.hash(req.body.password, 10)
-      users.push({
-          id: Date.now().toString(),
-          name: req.body.name,
-          email: req.body.email,
-          password: hashedPassword
-      })
+      // users.push({
+      //     id: Date.now().toString(),
+      //     name: req.body.name,
+      //     email: req.body.email,
+      //     password: hashedPassword
+      // })
       res.redirect('/login')
   } catch {
-      res.redirect('register')
+      res.redirect('/login')
   }
   console.log(users);
 })
 
-router.post('/login', checkNotAuthenticated, passport.authenticate('local', {
+app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
   successRedirect: '/',
   failureRedirect: '/login',
   failureFlash: true
 }))
 
-router.delete('/logout', (req, res) => {
+app.delete('/logout', (req, res) => {
   req.logOut()
   res.redirect('/login')
 })
