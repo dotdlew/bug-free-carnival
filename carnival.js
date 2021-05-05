@@ -1,39 +1,193 @@
-const path = require('path');
-const express = require('express');
-const session = require('express-session');
-const exphbs = require('express-handlebars');
-const helpers = require('./utils/helpers');
-const hbs = exphbs.create({helpers});
-// const passport = require('passport')
-
+require("dotenv").config();
+const inputCheck = require("./utils/inputCheck");
+const express = require("express");
+const mysql = require("mysql2");
 const app = express();
+// const bcrypt = require('bcrypt');
+const passport =  require('passport');
+const flash = require('express-flash');
+const session = require('express-session');
+const methodOverride = require('method-override');
+
 const PORT = process.env.PORT || 3001;
 
-const sequelize = require('./config/connection');
-const SequelizeStore = require('connect-session-sequelize')(session.Store);
+const initializePassport = require('./config/passport');
+initializePassport(
+    passport,
+    email =>  users.find(user => user.email === email),
+    id => users.find(user => user.id === id)
+);
 
-const sess = {
-        secret: 'Super secret secret',
-        cookie: {},
-        resave: false,
-        saveUninitialized: true,
-        store: new SequelizeStore({
-        db: sequelize
-    })
-};
-
-app.use(session(sess));
-
-
-app.engine('handlebars', hbs.engine);
-app.set('view engine', 'handlebars');
-
-app.use(express.json());
+app.set('view-engine', 'handlebars');
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(flash())
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false
+}))
 
-app.use(require('./controllers/'));
+app.use(passport.initialize())
+app.use(passport.session())
+app.use(methodOverride('_method'))
 
-sequelize.sync({ force: false }).then(() => {
-    app.listen(PORT, () => console.log('Now listening'));
+// Connect to database
+const db = mysql.createConnection(
+  {
+    host: "localhost",
+    user: process.env.DB_USER,
+    password: process.env.DB_PW,
+    database: process.env.DB_NAME,
+  },
+  console.log("Connected to the carnival_db database.")
+);
+
+// CREATE a userLogins
+app.post("/api/users", ({ body }, res) => {
+  const errors = inputCheck(body, "username", "email", "password");
+
+  if (errors) {
+    res.status(400).json({ error: errors });
+    return;
+  }
+
+  const sql = `INSERT INTO userLogins (id, username, email, password)
+    VALUES (?,?,?,?)`;
+  const params = [body.username, body.email, body.password];
+
+  db.query(sql, params, (err, result) => {
+    if (err) {
+      res.status(400).json({ error: err.message });
+      return;
+    }
+    res.json({
+      message: "success",
+      data: body,
+    });
+  });
 });
+
+// DELETE a userLogins
+app.delete("/api/users/:id", (req, res) => {
+  const sql = `DELETE FROM userLogins WHERE id = ?`;
+  const params = [req.params.id];
+
+  db.query(sql, params, (err, result) => {
+    if (err) {
+      res.statusMessage(400).json({ error: res.message });
+    } else if (!result.affectedRows) {
+      res.json({
+        message: "user not found",
+      });
+    } else {
+      res.json({
+        message: "user deleted",
+        changes: result.affectedRows,
+        id: req.params.id,
+      });
+    }
+  });
+});
+
+// GET all userLogins
+app.get("/api/users", (req, res) => {
+  const sql = `SELECT * FROM userLogins`;
+
+  db.query(sql, (err, rows) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({
+      message: "success",
+      data: rows,
+    });
+  });
+});
+
+// Get a single userLogins
+app.get("/api/users/:id", (req, res) => {
+  const sql = `SELECT * FROM userLogins WHERE id = ?`;
+  const params = [req.params.id];
+
+  db.query(sql, params, (err, row) => {
+    if (err) {
+      res.status(400).json({ error: err.message });
+      return;
+    }
+    res.json({
+      message: "success",
+      data: row,
+    });
+  });
+});
+
+// Test the Express.js Connection
+app.get("/", (req, res) => {
+  res.json({
+    message: "Hello World!",
+  });
+});
+
+// route to handle user requests that aren't supported by the app
+app.use((req, res) => {
+  res.status(404).end();
+});
+
+app.listen(PORT, () => {
+  console.log(`SERVER RUNNING ON ${PORT}`);
+});
+
+//for login 
+
+router.get('/', checkAuthenticated,  (req, res) => {
+  res.render('homepage.handlebars')
+})
+
+router.get('/login', checkNotAuthenticated, (req, res) => {
+  res.render('login.ejs')
+})
+router.get('/register', checkNotAuthenticated, (req, res) => {
+  res.render('register.ejs')
+})
+
+router.post('/register', checkNotAuthenticated, async (req, res) => {
+  try {
+      hashedPassword = await bcrypt.hash(req.body.password, 10)
+      users.push({
+          id: Date.now().toString(),
+          name: req.body.name,
+          email: req.body.email,
+          password: hashedPassword
+      })
+      res.redirect('/login')
+  } catch {
+      res.redirect('register')
+  }
+  console.log(users);
+})
+
+router.post('/login', checkNotAuthenticated, passport.authenticate('local', {
+  successRedirect: '/',
+  failureRedirect: '/login',
+  failureFlash: true
+}))
+
+router.delete('/logout', (req, res) => {
+  req.logOut()
+  res.redirect('/login')
+})
+
+function checkAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+      return next()
+  }
+  res.redirect('/login')
+}
+
+function checkNotAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+      return res.redirect('/')
+  }
+  next()
+}
