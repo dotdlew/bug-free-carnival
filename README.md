@@ -1,6 +1,10 @@
 # bug-free-carnival
 Project 2 Group 11
 
+<<<<<<< HEAD
+
+Yo project 2 lit
+=======
 ## Description 
 Full-Stack Node.JS Social Media / Instagram clone
 
@@ -27,3 +31,4 @@ Ryan Helm
 
 ## Contributing
 Clone the repo and issue pull requests
+>>>>>>> develop
