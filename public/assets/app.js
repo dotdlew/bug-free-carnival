@@ -1,11 +1,4 @@
-// const function loginFunction() {
-    
-// };
 
-// const function signUp(event) {
-//     event.preventDefault();
-    
-// }
 
 
 

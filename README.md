@@ -22,7 +22,9 @@ MIT
 
 ## Credits
 Daniel Lewis
+
 Javid De Los Santos
+
 Ryan Helm
 
 ## Contributing
