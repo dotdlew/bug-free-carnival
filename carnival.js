@@ -205,7 +205,7 @@ app.put("", (req, res) => {
     res.status(400).json({ error: errors });
     return;
   }
-  
+
   const sql = `UPDATE userlogins SET post_id = ?
   WHERE id = ?`;
   const params = [req.body.post_id, req.params.id];
