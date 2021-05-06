@@ -10,8 +10,8 @@ const passport = require("passport");
 const flash = require("express-flash");
 const session = require("express-session");
 const exphbs = require("express-handlebars");
-const hbs = exphbs.create({ helpers });
 const helpers = require("./utils/helpers");
+const hbs = exphbs.create({ helpers });
 const methodOverride = require("method-override");
 
 const PORT = process.env.PORT || 3001;
