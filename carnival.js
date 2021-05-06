@@ -103,7 +103,11 @@ app.delete("/api/users/:id", (req, res) => {
 
 // GET all userLogins
 app.get("/api/users", (req, res) => {
-  const sql = `SELECT * FROM userLogins`;
+  const sql = `SELECT userlogins.*, userposts.name
+  AS post_title
+  FROM userlogins
+  LEFT JOIN userposts
+  ON userlogins.post_id = userposts.id`;
 
   db.query(sql, (err, rows) => {
     if (err) {
@@ -117,9 +121,15 @@ app.get("/api/users", (req, res) => {
   });
 });
 
-// Get a single userLogins
+// Get a single userLogins by id
 app.get("/api/users/:id", (req, res) => {
-  const sql = `SELECT * FROM userLogins WHERE id = ?`;
+  const sql = `SELECT userlogins.*, userposts.name
+  AS post_title
+  FROM userlogins
+  LEFT JOIN userposts
+  ON userlogins.post_id = userposts.id
+  WHERE userlogins.id = ?`;
+
   const params = [req.params.id];
 
   db.query(sql, params, (err, row) => {
