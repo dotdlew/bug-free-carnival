@@ -154,9 +154,6 @@ app.get('/',  (req, res) => {
   res.render('homepage.handlebars')
 })
 
-app.get('/login', (req, res) => {
-  res.render('login.handlebars')
-})
 
 app.get('/login', (req, res) => {
   res.render('login.handlebars')
