@@ -197,6 +197,36 @@ app.delete("/api/posts/:id", (req, res) => {
   });
 });
 
+// UPDATE a userpost
+app.put("", (req, res) => {
+  const errors = inputCheck(req.body, "post_id");
+
+  if (errors) {
+    res.status(400).json({ error: errors });
+    return;
+  }
+  
+  const sql = `UPDATE userlogins SET post_id = ?
+  WHERE id = ?`;
+  const params = [req.body.post_id, req.params.id];
+  db.query(sql, params, (err, result) => {
+    if (err) {
+      res.status(400).json({ error: err.message });
+      // check if found
+    } else if (!result.affectedRows) {
+      res.json({
+        message: "user not found",
+      });
+    } else {
+      res.json({
+        message: "success",
+        data: req.body,
+        changes: result.affectedRows,
+      });
+    }
+  });
+});
+
 // Test the Express.js Connection
 app.get("/", (req, res) => {
   res.json({
