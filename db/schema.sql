@@ -1,9 +1,5 @@
-CREATE TABLE userLogins (
-    id INTEGER AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(30) NOT NULL,
-    email VARCHAR(30) NOT NULL,
-    password VARCHAR(30) NOT NULL
-);
+DROP TABLE IF EXISTS userPosts;
+DROP TABLE IF EXISTS userLogins;
 
 CREATE TABLE userPosts (
     id INTEGER AUTO_INCREMENT PRIMARY KEY,
@@ -11,3 +7,11 @@ CREATE TABLE userPosts (
     description TEXT
 );
 
+CREATE TABLE userLogins (
+    id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(30) NOT NULL,
+    email VARCHAR(30) NOT NULL,
+    password VARCHAR(30) NOT NULL,
+    post_id INTEGER,
+    CONSTRAINT fk_post FOREIGN KEY (post_id) REFERENCES userPosts(id) ON DELETE SET NULL
+);
