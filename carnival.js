@@ -133,11 +133,11 @@ app.get("/api/users/:id", (req, res) => {
 });
 
 // Test the Express.js Connection
-app.get("/", (req, res) => {
-  res.json({
-    message: "Hello World!",
-  });
-});
+// app.get("/", (req, res) => {
+//   res.json({
+//     message: "Hello World!",
+//   });
+// });
 
 // route to handle user requests that aren't supported by the app
 // app.use((req, res) => {
