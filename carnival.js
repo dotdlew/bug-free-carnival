@@ -144,6 +144,59 @@ app.get("/api/users/:id", (req, res) => {
   });
 });
 
+// GET userposts
+app.get("/api/posts", (req, res) => {
+  const sql = `SELECT * FROM userposts`;
+  db.query(sql, (err, rows) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({
+      message: "success",
+      data: rows,
+    });
+  });
+});
+
+// GET single userposts by id
+app.get("/api/posts/:id", (req, res) => {
+  const sql = `SELECT * FROM userposts WHERE id = ?`;
+  const params = [req.params.id];
+  db.query(sql, params, (err, row) => {
+    if (err) {
+      res.status(400).json({ error: err.message });
+      return;
+    }
+    res.json({
+      message: "success",
+      data: row,
+    });
+  });
+});
+
+// DELETE single userposts by id
+app.delete("/api/posts/:id", (req, res) => {
+  const sql = `DELETE FROM userposts WHERE id = ?`;
+  const params = [req.params.id];
+  db.query(sql, params, (err, result) => {
+    if (err) {
+      res.status(400).json({ error: res.message });
+      // check for delete
+    } else if (!result.affectedRows) {
+      res.json({
+        message: "post not found",
+      });
+    } else {
+      res.json({
+        message: "deleted",
+        changes: result.affectedRows,
+        id: req.params.id,
+      });
+    }
+  });
+});
+
 // Test the Express.js Connection
 app.get("/", (req, res) => {
   res.json({
