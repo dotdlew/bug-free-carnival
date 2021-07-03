@@ -227,13 +227,6 @@ app.put("", (req, res) => {
   });
 });
 
-// Test the Express.js Connection
-app.get("/", (req, res) => {
-  res.json({
-    message: "Hello World!",
-  });
-});
-
 // route to handle user requests that aren't supported by the app
 // app.use((req, res) => {
 //   res.status(404).end();
@@ -253,7 +246,6 @@ app.get("/", checkAuthenticated, (req, res) => {
 //   res.render('./public/login.handlebars')
 // })
 app.get("/login", (req, res) => {
-  console.log("Testing");
   res.render("login.handlebars");
 });
 
