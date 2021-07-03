@@ -1,6 +1,9 @@
 {
   "name": "bug-free-carnival",
   "version": "1.0.0",
+  "engines": {
+    "node": "14.x"
+  },
   "description": "Project 2 Group 11",
   "main": "carnival.js",
   "dependencies": {
