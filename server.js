@@ -13,6 +13,8 @@ const exphbs = require("express-handlebars");
 const helpers = require("./utils/helpers");
 const hbs = exphbs.create({ helpers });
 const methodOverride = require("method-override");
+const Sequelize = require("sequelize");
+require("dotenv").config();
 
 const PORT = process.env.PORT || 3001;
 
@@ -43,16 +45,23 @@ app.use(express.static(path.join(__dirname, "public")));
 
 const users = [];
 
-// Connect to database
-const db = mysql.createConnection(
-  {
-    host: "localhost",
-    user: process.env.DB_USER,
-    password: process.env.DB_PW,
-    database: process.env.DB_NAME,
-  },
-  console.log("Connected to the carnival_db database.")
-);
+// create connection to our db
+let sequelize;
+
+if (process.env.JAWSDB_URL) {
+  sequelize = new Sequelize(process.env.JAWSDB_URL);
+} else {
+  sequelize = new Sequelize(
+    process.env.DB_NAME,
+    process.env.DB_USER,
+    process.env.DB_PW,
+    {
+      host: "localhost",
+      dialect: "mysql",
+      port: 3306,
+    }
+  );
+}
 
 // CREATE a userLogins
 app.post("/api/users", ({ body }, res) => {
