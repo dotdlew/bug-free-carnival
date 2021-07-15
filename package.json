@@ -2,9 +2,9 @@
   "name": "bug-free-carnival",
   "version": "1.0.0",
   "description": "Project 2 Group 11",
-  "main": "carnival.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node carnival.js"
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
