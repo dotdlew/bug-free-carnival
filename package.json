@@ -22,8 +22,10 @@
   },
   "scripts": {
     "test": "jest",
-    "start": "node carnival.js"
-  },
+    "start": "node carnival.js",
+    "install": "npm i",
+    "seed": "npm run seed"
+    },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dotdlew/bug-free-carnival.git"
